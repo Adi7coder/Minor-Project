@@ -28,22 +28,22 @@ Minor-Project/
 
 ## Installation and Setup
 
-#Clone the repository:
+# Clone the repository:
 
 git clone https://github.com/Adi7coder/Minor-Project.git
 cd Minor-Project
 
-#install dependencies: 
+# install dependencies: 
 pip install ultralytics roboflow opencv-python matplotlib
 
-#load the trained model and run detection:
+# load the trained model and run detection:
 from ultralytics import YOLO
 model = YOLO("best.pt")
 model.predict(source="image.jpg", save=True, conf=0.25)
 
-#Results will be saved in: runs/detect/predict/
+# Results will be saved in: runs/detect/predict/
 
-##Model Performance
+## Model Performance
 
 Precision: approximately 0.83
 Recall: approximately 0.45
