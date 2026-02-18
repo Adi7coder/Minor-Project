@@ -1,0 +1,12 @@
+names:
+- garbage
+nc: 1
+roboflow:
+  license: Private
+  project: garbage-segmentation-jr0aj
+  url: https://app.roboflow.com/mini-project-zheci/garbage-segmentation-jr0aj/1
+  version: 1
+  workspace: mini-project-zheci
+test: ../test/images
+train: ../train/images
+val: ../valid/images
