@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, MapPin, UploadCloud, AlertCircle } from 'lucide-react';
+import { Camera, MapPin, UploadCloud, AlertCircle, Image as ImageIcon, Check } from 'lucide-react';
 
 const SubmitReport: React.FC = () => {
   const [step, setStep] = useState(1);
   const [image, setImage] = useState<string | null>(null);
   const [location, setLocation] = useState<{lat: number, lng: number, acc: number} | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +32,7 @@ const SubmitReport: React.FC = () => {
           setStep(3);
         },
         (error) => {
+          console.error(error);
           alert('Error capturing location. Please enable GPS.');
         },
         { enableHighAccuracy: true, timeout: 15000 }
@@ -39,6 +41,7 @@ const SubmitReport: React.FC = () => {
   };
 
   const submitReport = () => {
+    setIsSubmitting(true);
     // API mock logic would go here
     setTimeout(() => {
       navigate('/track/GD-20250326-ABCDE');
@@ -46,77 +49,118 @@ const SubmitReport: React.FC = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
-      <h2 className="text-2xl font-bold text-slate-900 mb-6">New Report</h2>
+    <div className="p-4 sm:p-6 w-full max-w-md mx-auto pt-8">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-black text-slate-800 tracking-tight">Report Issue</h2>
+        <p className="text-slate-500 font-medium mt-1">Help us locate the garbage dump</p>
+      </div>
       
-      {/* Progress */}
-      <div className="flex justify-between mb-8 relative">
-        <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-200 -z-10 -translate-y-1/2 rounded-full"></div>
-        <div className={`absolute top-1/2 left-0 h-1 bg-[#667eea] -z-10 -translate-y-1/2 rounded-full transition-all`} style={{ width: step === 1 ? '0%' : step === 2 ? '50%' : '100%' }}></div>
+      {/* Premium Progress Indicator */}
+      <div className="flex justify-between mb-10 relative px-2">
+        <div className="absolute top-1/2 left-4 right-4 h-1.5 bg-slate-200 -z-10 -translate-y-1/2 rounded-full"></div>
+        <div className={`absolute top-1/2 left-4 h-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 -z-10 -translate-y-1/2 rounded-full transition-all duration-700 ease-out shadow-sm shadow-indigo-500/50`} style={{ width: step === 1 ? '0%' : step === 2 ? '50%' : 'calc(100% - 2rem)' }}></div>
         
         {[1, 2, 3].map((s) => (
-          <div key={s} className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= s ? 'bg-[#667eea] text-white' : 'bg-white text-slate-400 border-2 border-slate-200'}`}>
-            {s}
+          <div key={s} className="flex flex-col items-center gap-2">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 shadow-sm ${step > s ? 'bg-indigo-600 text-white border-none' : step === s ? 'bg-white text-indigo-600 border-2 border-indigo-600 ring-4 ring-indigo-50' : 'bg-white text-slate-400 border-2 border-slate-200'}`}>
+              {step > s ? <Check strokeWidth={3} size={18} /> : s}
+            </div>
+            <span className={`text-[10px] font-bold uppercase tracking-widest ${step >= s ? 'text-indigo-600' : 'text-slate-400'}`}>
+              {s === 1 ? 'Photo' : s === 2 ? 'Location' : 'Submit'}
+            </span>
           </div>
         ))}
       </div>
 
-      {step === 1 && (
-        <div className="animate-in fade-in slide-in-from-right-4">
-          <div className="bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-3xl p-8 text-center flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-indigo-100 transition-colors relative h-64">
-            <input type="file" accept="image/jpeg, image/png" capture="environment" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleImageUpload} />
-            <div className="bg-white p-4 rounded-full shadow-sm text-indigo-500">
-              <Camera size={32} />
-            </div>
-            <div>
-              <p className="font-semibold text-slate-800">Tap to take photo</p>
-              <p className="text-sm text-slate-500">or upload from gallery</p>
+      <div className="relative">
+        {step === 1 && (
+          <div className="animate-in fade-in slide-in-from-right-8 duration-500">
+            <div className="glass-card border-2 border-dashed border-indigo-300 rounded-[2rem] p-8 text-center flex flex-col items-center justify-center gap-5 cursor-pointer hover:bg-indigo-50/50 hover:border-indigo-400 transition-all relative h-72 group">
+              <input type="file" accept="image/jpeg, image/png" capture="environment" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={handleImageUpload} />
+              
+              <div className="relative">
+                <div className="absolute inset-0 bg-indigo-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity animate-pulse"></div>
+                <div className="bg-white p-5 rounded-full shadow-lg text-indigo-600 relative z-10 group-hover:-translate-y-2 transition-transform duration-300">
+                  <Camera size={40} strokeWidth={1.5} />
+                </div>
+              </div>
+              
+              <div>
+                <p className="font-extrabold text-slate-800 text-lg">Tap to take photo</p>
+                <p className="text-sm font-medium text-slate-500 flex items-center justify-center gap-1 mt-1">
+                  <ImageIcon size={14} /> or choose from gallery
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {step === 2 && image && (
-        <div className="animate-in fade-in slide-in-from-right-4 space-y-6">
-          <div className="rounded-2xl overflow-hidden shadow-sm border border-slate-200 relative aspect-video">
-            <img src={image} alt="Preview" className="w-full h-full object-cover" />
-          </div>
-          
-          <button onClick={captureLocation} className="w-full bg-[#667eea] text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 hover:bg-indigo-600 transition-colors">
-            <MapPin size={20} />
-            Capture Location
-          </button>
-        </div>
-      )}
-
-      {step === 3 && image && location && (
-        <div className="animate-in fade-in slide-in-from-right-4 space-y-6">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
-            <h3 className="font-bold text-slate-900 border-b pb-2">Review Details</h3>
+        {step === 2 && image && (
+          <div className="animate-in fade-in slide-in-from-right-8 duration-500 space-y-6">
+            <div className="rounded-[2rem] overflow-hidden shadow-xl shadow-slate-200/50 border-[6px] border-white relative aspect-[4/3] bg-slate-100 group">
+              <img src={image} alt="Preview" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-white font-medium text-sm flex items-center gap-1"><Check size={16} className="text-green-400"/> Photo captured</span>
+              </div>
+            </div>
             
-            <div className="flex gap-4 items-center">
-              <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0">
-                <img src={image} className="w-full h-full object-cover" />
-              </div>
-              <div className="text-sm">
-                <p className="font-medium text-slate-800">Location</p>
-                <p className="text-slate-500">{location.lat.toFixed(4)}, {location.lng.toFixed(4)}</p>
-                <p className="text-xs text-green-600 mt-1">Accuracy: ±{Math.round(location.acc)}m</p>
+            <button onClick={captureLocation} className="group relative w-full bg-slate-900 text-white py-4.5 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl shadow-slate-900/20 transition-all duration-300 overflow-hidden hover:-translate-y-1">
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <MapPin size={22} className="relative z-10 animate-bounce" />
+              <span className="relative z-10">Detect My Location</span>
+            </button>
+            <button onClick={() => setStep(1)} className="w-full py-3 text-slate-500 font-medium hover:text-slate-800 transition-colors">
+              Retake Photo
+            </button>
+          </div>
+        )}
+
+        {step === 3 && image && location && (
+          <div className="animate-in fade-in slide-in-from-right-8 duration-500 space-y-6">
+            <div className="glass-card p-5 rounded-3xl space-y-4">
+              <h3 className="font-extrabold text-slate-800 text-lg flex items-center gap-2">
+                <Check className="text-green-500 bg-green-100 p-1 rounded-full" size={24} />
+                Ready to Submit
+              </h3>
+              
+              <div className="flex gap-4 items-center bg-slate-50/50 p-3 rounded-2xl border border-slate-100">
+                <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 shadow-sm border border-white">
+                  <img src={image} className="w-full h-full object-cover" />
+                </div>
+                <div className="text-sm">
+                  <p className="font-bold text-slate-800 mb-0.5 mt-1">Incident Location</p>
+                  <p className="text-slate-500 font-mono text-xs bg-white py-1 px-2 rounded-md inline-block border border-slate-100 mb-1">
+                    {location.lat.toFixed(5)}, {location.lng.toFixed(5)}
+                  </p>
+                  <p className="text-xs font-medium text-green-600 flex items-center gap-1">
+                    <MapPin size={12} /> High Accuracy ({Math.round(location.acc)}m)
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div className="flex items-start gap-3 bg-amber-50 p-4 rounded-xl text-amber-800 text-sm">
-            <AlertCircle className="shrink-0 mt-0.5" size={18} />
-            <p>By submitting, you agree to our terms. False reporting may lead to account penalties.</p>
-          </div>
+            
+            <div className="flex items-start gap-3 bg-amber-50/80 border border-amber-200/50 p-4 rounded-2xl text-amber-800 text-sm font-medium shadow-sm">
+              <AlertCircle className="shrink-0 mt-0.5 text-amber-500" size={18} />
+              <p>False reporting may lead to account penalties. By submitting, you verify this dump exists.</p>
+            </div>
 
-          <button onClick={submitReport} className="w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-indigo-200 hover:opacity-90 transition-opacity">
-            <UploadCloud size={20} />
-            Confirm & Submit
-          </button>
-        </div>
-      )}
+            <button 
+              onClick={submitReport} 
+              disabled={isSubmitting}
+              className={`group relative w-full bg-slate-900 text-white py-4.5 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl transition-all duration-300 overflow-hidden ${isSubmitting ? 'opacity-80 cursor-not-allowed' : 'hover:-translate-y-1 hover:shadow-indigo-500/30'}`}
+            >
+              <div className={`absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-300% ${isSubmitting ? 'animate-gradient' : 'opacity-0 group-hover:opacity-100 transition-opacity duration-500'}`}></div>
+              
+              {isSubmitting ? (
+                <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin relative z-10"></div>
+              ) : (
+                <UploadCloud size={22} className="relative z-10" />
+              )}
+              <span className="relative z-10">{isSubmitting ? 'Verifying & Submitting...' : 'Confirm & Submit'}</span>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
