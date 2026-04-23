@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, MapPin, UploadCloud, AlertCircle, Image as ImageIcon, Check } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const SubmitReport: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -59,6 +60,23 @@ const SubmitReport: React.FC = () => {
       });
       const data = await response.json();
       if (response.ok) {
+        // Sync with Supabase for real-time municipal dashboard
+        try {
+          await supabase.from('reports').insert([{
+            tracking_code: data.report_id,
+            latitude: location.lat,
+            longitude: location.lng,
+            accuracy: location.acc,
+            image_url: data.image_url,
+            status: data.status,
+            confidence: data.confidence,
+            waste_type: data.waste_type,
+            created_at: new Date().toISOString()
+          }]);
+        } catch (supabaseError) {
+          console.error("Supabase sync failed:", supabaseError);
+        }
+        
         navigate(`/track/${data.report_id}`);
       } else {
         alert('Failed to submit report. Please try again.');

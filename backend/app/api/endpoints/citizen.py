@@ -74,6 +74,9 @@ async def create_report(
             "success": True,
             "report_id": tracking_code,
             "status": status,
+            "confidence": confidence,
+            "waste_type": ml_result.get("waste_type"),
+            "image_url": image_url,
             "message": "Report submitted successfully."
         }
     except Exception as e:
