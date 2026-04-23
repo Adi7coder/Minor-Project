@@ -8,8 +8,13 @@ from io import BytesIO
 from PIL import Image
 from ultralytics import YOLO
 
+import os
+
 try:
-    model = YOLO('yolov8n.pt')
+    # Check if custom weights from Colab (best.pt) exist, otherwise use default yolov8n
+    model_path = 'best.pt' if os.path.exists('best.pt') else 'yolov8n.pt'
+    print(f"Loading model from: {model_path}")
+    model = YOLO(model_path)
 except Exception as e:
     print(f"Failed to load YOLO model: {e}")
     model = None

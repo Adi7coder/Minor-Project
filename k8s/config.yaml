@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cleanblr-config
+  namespace: cleanblr
+data:
+  ML_SERVICE_URL: "http://ml-service:8001/ml/detect"
+  PROJECT_NAME: "CleanBLR Production"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cleanblr-secrets
+  namespace: cleanblr
+type: Opaque
+stringData:
+  DATABASE_URL: "postgresql+asyncpg://cleanblr_admin:securepassword123@your-supabase-url:5432/postgres"
+  VITE_SUPABASE_URL: "https://your-project.supabase.co"
+  VITE_SUPABASE_ANON_KEY: "your-anon-key"
