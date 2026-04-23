@@ -37,13 +37,13 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-xl shadow-indigo-900/5;
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-xl shadow-green-900/5;
   }
   .glass-card {
-    @apply bg-white/80 backdrop-blur-xl border border-white/50 shadow-lg shadow-indigo-100/50 hover:shadow-xl transition-all duration-300;
+    @apply bg-white/80 backdrop-blur-xl border border-white/50 shadow-lg shadow-green-100/50 hover:shadow-xl transition-all duration-300;
   }
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-teal-600;
   }
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);

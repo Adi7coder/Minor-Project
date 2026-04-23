@@ -15,7 +15,7 @@ const Sidebar: React.FC = () => {
     <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col h-screen fixed left-0 top-0">
       <div className="h-16 flex items-center px-6 border-b border-slate-800">
         <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center">
             <span className="text-white text-sm font-black">CB</span>
           </div>
           CleanBLR
@@ -31,11 +31,11 @@ const Sidebar: React.FC = () => {
               to={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 isActive 
-                  ? 'bg-indigo-600/10 text-indigo-400 font-medium' 
+                  ? 'bg-red-600/10 text-red-400 font-medium' 
                   : 'hover:bg-slate-800/50 hover:text-white'
               }`}
             >
-              <span className={isActive ? 'text-indigo-400' : 'text-slate-400'}>
+              <span className={isActive ? 'text-red-400' : 'text-slate-400'}>
                 {item.icon}
               </span>
               {item.label}

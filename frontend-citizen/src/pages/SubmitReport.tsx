@@ -40,12 +40,35 @@ const SubmitReport: React.FC = () => {
     }
   };
 
-  const submitReport = () => {
+  const submitReport = async () => {
+    if (!image || !location) return;
     setIsSubmitting(true);
-    // API mock logic would go here
-    setTimeout(() => {
-      navigate('/track/GD-20250326-ABCDE');
-    }, 1500);
+    try {
+      const response = await fetch('http://localhost:8000/api/v1/reports/citizen/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: image,
+          latitude: location.lat,
+          longitude: location.lng,
+          accuracy: location.acc,
+          timestamp: new Date().toISOString()
+        })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        navigate(`/track/${data.report_id}`);
+      } else {
+        alert('Failed to submit report. Please try again.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Network error while submitting.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -58,14 +81,14 @@ const SubmitReport: React.FC = () => {
       {/* Premium Progress Indicator */}
       <div className="flex justify-between mb-10 relative px-2">
         <div className="absolute top-1/2 left-4 right-4 h-1.5 bg-slate-200 -z-10 -translate-y-1/2 rounded-full"></div>
-        <div className={`absolute top-1/2 left-4 h-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 -z-10 -translate-y-1/2 rounded-full transition-all duration-700 ease-out shadow-sm shadow-indigo-500/50`} style={{ width: step === 1 ? '0%' : step === 2 ? '50%' : 'calc(100% - 2rem)' }}></div>
+        <div className={`absolute top-1/2 left-4 h-1.5 bg-gradient-to-r from-green-500 to-teal-500 -z-10 -translate-y-1/2 rounded-full transition-all duration-700 ease-out shadow-sm shadow-green-500/50`} style={{ width: step === 1 ? '0%' : step === 2 ? '50%' : 'calc(100% - 2rem)' }}></div>
         
         {[1, 2, 3].map((s) => (
           <div key={s} className="flex flex-col items-center gap-2">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 shadow-sm ${step > s ? 'bg-indigo-600 text-white border-none' : step === s ? 'bg-white text-indigo-600 border-2 border-indigo-600 ring-4 ring-indigo-50' : 'bg-white text-slate-400 border-2 border-slate-200'}`}>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 shadow-sm ${step > s ? 'bg-green-600 text-white border-none' : step === s ? 'bg-white text-green-600 border-2 border-green-600 ring-4 ring-green-50' : 'bg-white text-slate-400 border-2 border-slate-200'}`}>
               {step > s ? <Check strokeWidth={3} size={18} /> : s}
             </div>
-            <span className={`text-[10px] font-bold uppercase tracking-widest ${step >= s ? 'text-indigo-600' : 'text-slate-400'}`}>
+            <span className={`text-[10px] font-bold uppercase tracking-widest ${step >= s ? 'text-green-600' : 'text-slate-400'}`}>
               {s === 1 ? 'Photo' : s === 2 ? 'Location' : 'Submit'}
             </span>
           </div>
@@ -75,12 +98,12 @@ const SubmitReport: React.FC = () => {
       <div className="relative">
         {step === 1 && (
           <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-            <div className="glass-card border-2 border-dashed border-indigo-300 rounded-[2rem] p-8 text-center flex flex-col items-center justify-center gap-5 cursor-pointer hover:bg-indigo-50/50 hover:border-indigo-400 transition-all relative h-72 group">
+            <div className="glass-card border-2 border-dashed border-green-300 rounded-[2rem] p-8 text-center flex flex-col items-center justify-center gap-5 cursor-pointer hover:bg-green-50/50 hover:border-green-400 transition-all relative h-72 group">
               <input type="file" accept="image/jpeg, image/png" capture="environment" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={handleImageUpload} />
               
               <div className="relative">
-                <div className="absolute inset-0 bg-indigo-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity animate-pulse"></div>
-                <div className="bg-white p-5 rounded-full shadow-lg text-indigo-600 relative z-10 group-hover:-translate-y-2 transition-transform duration-300">
+                <div className="absolute inset-0 bg-green-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity animate-pulse"></div>
+                <div className="bg-white p-5 rounded-full shadow-lg text-green-600 relative z-10 group-hover:-translate-y-2 transition-transform duration-300">
                   <Camera size={40} strokeWidth={1.5} />
                 </div>
               </div>
@@ -105,7 +128,7 @@ const SubmitReport: React.FC = () => {
             </div>
             
             <button onClick={captureLocation} className="group relative w-full bg-slate-900 text-white py-4.5 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl shadow-slate-900/20 transition-all duration-300 overflow-hidden hover:-translate-y-1">
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <MapPin size={22} className="relative z-10 animate-bounce" />
               <span className="relative z-10">Detect My Location</span>
             </button>
@@ -147,9 +170,9 @@ const SubmitReport: React.FC = () => {
             <button 
               onClick={submitReport} 
               disabled={isSubmitting}
-              className={`group relative w-full bg-slate-900 text-white py-4.5 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl transition-all duration-300 overflow-hidden ${isSubmitting ? 'opacity-80 cursor-not-allowed' : 'hover:-translate-y-1 hover:shadow-indigo-500/30'}`}
+              className={`group relative w-full bg-slate-900 text-white py-4.5 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl transition-all duration-300 overflow-hidden ${isSubmitting ? 'opacity-80 cursor-not-allowed' : 'hover:-translate-y-1 hover:shadow-green-500/30'}`}
             >
-              <div className={`absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-300% ${isSubmitting ? 'animate-gradient' : 'opacity-0 group-hover:opacity-100 transition-opacity duration-500'}`}></div>
+              <div className={`absolute inset-0 bg-gradient-to-r from-green-600 via-teal-600 to-green-600 bg-300% ${isSubmitting ? 'animate-gradient' : 'opacity-0 group-hover:opacity-100 transition-opacity duration-500'}`}></div>
               
               {isSubmitting ? (
                 <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin relative z-10"></div>

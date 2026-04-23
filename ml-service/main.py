@@ -3,10 +3,21 @@ from pydantic import BaseModel, Field
 from typing import List
 import time
 
+import base64
+from io import BytesIO
+from PIL import Image
+from ultralytics import YOLO
+
+try:
+    model = YOLO('yolov8n.pt')
+except Exception as e:
+    print(f"Failed to load YOLO model: {e}")
+    model = None
+
 app = FastAPI(title="CleanBLR ML Service")
 
 class DetectionRequest(BaseModel):
-    image_url: str
+    image_data: str
 
 class DetectionBox(BaseModel):
     class_name: str = Field(alias="class")
@@ -28,32 +39,57 @@ class DetectionResponse(BaseModel):
 async def detect_garbage(request: DetectionRequest):
     start_time = time.time()
     
-    # In a real scenario, we'd download the image and pass it to YOLO
-    # try:
-    #     response = requests.get(request.image_url)
-    #     image = Image.open(BytesIO(response.content))
-    #     results = model(image)
-    #     ... extracting bboxes and classes
-    # except Exception as e:
-    #     raise HTTPException(status_code=400, detail="Invalid image")
+    if not model:
+        raise HTTPException(status_code=500, detail="Model not loaded")
+
+    try:
+        if request.image_data.startswith('http'):
+            import requests
+            response = requests.get(request.image_data)
+            image = Image.open(BytesIO(response.content))
+        else:
+            base64_data = request.image_data.split(",")[-1] if "," in request.image_data else request.image_data
+            image_bytes = base64.b64decode(base64_data)
+            image = Image.open(BytesIO(image_bytes))
+            
+        results = model(image)
         
-    # Mocking YOLOv8 inference for now, since running real ML inference might fail in environment
-    import asyncio
-    await asyncio.sleep(0.5) # Simulate inference delay
-    
-    inference_time = round(time.time() - start_time, 3)
-    
-    return DetectionResponse(
-        is_garbage=True,
-        confidence=0.935,
-        waste_type="mixed",
-        detections=[
-            {"class": "plastic_bag", "confidence": 0.92, "bbox": [100, 150, 400, 500]},
-            {"class": "cardboard", "confidence": 0.88, "bbox": [200, 50, 300, 200]}
-        ],
-        inference_time=inference_time,
-        model_version="yolov8n-garbage-mock"
-    )
+        detections = []
+        highest_conf = 0.0
+        
+        for r in results:
+            boxes = r.boxes
+            for box in boxes:
+                cls_id = int(box.cls[0])
+                class_name = model.names[cls_id]
+                conf = float(box.conf[0])
+                bbox = box.xyxy[0].tolist()
+                
+                detections.append({
+                    "class": class_name,
+                    "confidence": conf,
+                    "bbox": [int(b) for b in bbox]
+                })
+                
+                if conf > highest_conf:
+                    highest_conf = conf
+
+        inference_time = round(time.time() - start_time, 3)
+        
+        # We classify anything detected by YOLOv8n with > 0.3 conf as "garbage" for demo purposes
+        is_garbage = len(detections) > 0 and highest_conf > 0.3
+        
+        return DetectionResponse(
+            is_garbage=is_garbage,
+            confidence=highest_conf if is_garbage else 0.0,
+            waste_type="mixed" if is_garbage else "none",
+            detections=detections,
+            inference_time=inference_time,
+            model_version="yolov8n"
+        )
+    except Exception as e:
+        print(f"Error during ML inference: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

@@ -7,10 +7,37 @@ const Tracking: React.FC = () => {
   const [searchId, setSearchId] = useState(reportId || '');
   const [searched, setSearched] = useState(!!reportId);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchId.trim()) setSearched(true);
+  const [reportData, setReportData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSearch = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!searchId.trim()) return;
+    
+    setSearched(true);
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/reports/citizen/${searchId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setReportData(data);
+      } else {
+        setError('Report not found. Please check your ID.');
+      }
+    } catch (err) {
+      setError('Network error while fetching report.');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  React.useEffect(() => {
+    if (reportId) {
+      handleSearch();
+    }
+  }, [reportId]);
 
   return (
     <div className="p-4 sm:p-6 w-full max-w-md mx-auto pt-8">
@@ -25,30 +52,38 @@ const Tracking: React.FC = () => {
           value={searchId}
           onChange={(e) => setSearchId(e.target.value.toUpperCase())}
           placeholder="e.g. GD-20250326"
-          className="w-full bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl py-4.5 pl-5 pr-14 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-slate-400 shadow-sm transition-all group-hover:shadow-md"
+          className="w-full bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl py-4.5 pl-5 pr-14 text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-slate-400 shadow-sm transition-all group-hover:shadow-md"
         />
-        <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-slate-900 text-white rounded-xl hover:bg-indigo-600 transition-colors shadow-sm">
+        <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-slate-900 text-white rounded-xl hover:bg-green-600 transition-colors shadow-sm disabled:opacity-50" disabled={isLoading}>
           <Search size={20} strokeWidth={2.5} />
         </button>
       </form>
 
       {searched && (
         <div className="glass-card rounded-[2rem] p-6 shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-6 duration-500">
-          <div className="flex justify-between items-start mb-8 border-b border-slate-100 pb-5">
-            <div>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1.5 flex items-center gap-1">
-                <Sparkles size={12} className="text-indigo-500" /> Current Status
-              </p>
-              <h3 className="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Verified</h3>
-            </div>
-            <div className="bg-indigo-50/80 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm shadow-indigo-100">
-              AI Match: 95%
-            </div>
-          </div>
+          {isLoading ? (
+            <div className="text-center py-8 text-slate-500 font-medium animate-pulse">Loading status...</div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-500 font-medium">{error}</div>
+          ) : reportData ? (
+            <>
+              <div className="flex justify-between items-start mb-8 border-b border-slate-100 pb-5">
+                <div>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                    <Sparkles size={12} className="text-green-500" /> Current Status
+                  </p>
+                  <h3 className="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-600 capitalize">{reportData.status}</h3>
+                </div>
+                {reportData.detection && (
+                  <div className="bg-green-50/80 border border-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm shadow-green-100">
+                    AI Match: {Math.round(reportData.detection.confidence * 100)}%
+                  </div>
+                )}
+              </div>
 
           <div className="relative pl-7 space-y-8">
             {/* Timeline Line */}
-            <div className="absolute left-[13px] top-3 bottom-8 w-0.5 bg-gradient-to-b from-indigo-500 via-indigo-200 to-slate-200 rounded-full"></div>
+            <div className="absolute left-[13px] top-3 bottom-8 w-0.5 bg-gradient-to-b from-green-500 via-green-200 to-slate-200 rounded-full"></div>
             
             <div className="relative z-10">
               <div className="absolute -left-9 bg-white p-1 rounded-full shadow-sm ring-4 ring-white border border-slate-100">
@@ -62,7 +97,7 @@ const Tracking: React.FC = () => {
 
             <div className="relative z-10">
               <div className="absolute -left-9 bg-white p-1 rounded-full shadow-sm ring-4 ring-white border border-slate-100">
-                <CheckCircle2 size={24} className="text-indigo-500 fill-indigo-50" strokeWidth={2} />
+                <CheckCircle2 size={24} className="text-green-500 fill-green-50" strokeWidth={2} />
               </div>
               <div className="-mt-1">
                 <p className="font-bold text-slate-900 text-lg">AI Verified</p>
@@ -100,6 +135,8 @@ const Tracking: React.FC = () => {
               View on Map
             </button>
           </div>
+            </>
+          ) : null}
         </div>
       )}
     </div>

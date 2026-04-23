@@ -29,7 +29,7 @@ const ReportsTable: React.FC = () => {
             <input 
               type="text" 
               placeholder="Search ID, Zone..." 
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
             />
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           </div>
@@ -57,7 +57,7 @@ const ReportsTable: React.FC = () => {
             {mockReports.map((report) => (
               <tr key={report.id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="px-6 py-4">
-                  <span className="font-semibold text-indigo-600 cursor-pointer hover:underline">{report.id}</span>
+                  <span className="font-semibold text-red-600 cursor-pointer hover:underline">{report.id}</span>
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-600">{report.date}</td>
                 <td className="px-6 py-4 text-sm text-slate-600 flex items-center gap-1.5">
@@ -87,7 +87,7 @@ const ReportsTable: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button className="p-1.5 text-slate-400 hover:text-indigo-600 transition-colors" title="View Details">
+                    <button className="p-1.5 text-slate-400 hover:text-red-600 transition-colors" title="View Details">
                       <Eye size={18} />
                     </button>
                     <button className="p-1.5 text-slate-400 hover:text-slate-900 transition-colors">
@@ -105,7 +105,7 @@ const ReportsTable: React.FC = () => {
         <p>Showing 1 to 4 of 1,234 entries</p>
         <div className="flex gap-1">
           <button className="px-3 py-1 border border-slate-200 rounded text-slate-400 cursor-not-allowed">Prevent</button>
-          <button className="px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded font-medium">1</button>
+          <button className="px-3 py-1 bg-red-50 border border-red-100 text-red-600 rounded font-medium">1</button>
           <button className="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50">2</button>
           <button className="px-3 py-1 border border-slate-200 rounded hover:bg-slate-50">3</button>
           <span className="px-2 py-1">...</span>

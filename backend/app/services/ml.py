@@ -4,12 +4,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-async def verify_garbage(image_url: str) -> dict:
+async def verify_garbage(image_data: str) -> dict:
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 settings.ML_SERVICE_URL,
-                json={"image_url": image_url},
+                json={"image_data": image_data},
                 timeout=10.0
             )
             response.raise_for_status()

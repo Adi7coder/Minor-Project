@@ -17,7 +17,7 @@ const Login: React.FC = () => {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 border border-slate-100">
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-gradient-to-tr from-slate-800 to-slate-900 p-3 rounded-2xl text-white mb-4 shadow-lg shadow-slate-300">
+          <div className="bg-gradient-to-tr from-red-600 to-rose-600 p-3 rounded-2xl text-white mb-4 shadow-lg shadow-red-200">
             <ShieldCheck size={32} />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Municipal Portal</h1>
@@ -33,7 +33,7 @@ const Login: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none transition-all"
                 placeholder="admin@bbmp.gov.in"
                 required
               />
@@ -49,7 +49,7 @@ const Login: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none transition-all"
                 placeholder="••••••••"
                 required
               />
@@ -59,15 +59,15 @@ const Login: React.FC = () => {
 
           <div className="flex items-center justify-between text-sm mt-2">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" className="rounded border-slate-300 text-slate-800 focus:ring-slate-800" />
+              <input type="checkbox" className="rounded border-slate-300 text-red-600 focus:ring-red-600" />
               <span className="text-slate-600">Remember me</span>
             </label>
-            <a href="#" className="text-slate-800 font-medium hover:underline">Forgot Password?</a>
+            <a href="#" className="text-red-600 font-medium hover:underline">Forgot Password?</a>
           </div>
 
           <button 
             type="submit" 
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-slate-200 mt-4"
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-red-200 mt-4"
           >
             Sign In
           </button>

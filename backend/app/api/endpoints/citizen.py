@@ -27,7 +27,7 @@ async def create_report(
         image_url = await storage.upload_image(report_in.image)
 
         # 2. Call ML Service
-        ml_result = await ml.verify_garbage(image_url)
+        ml_result = await ml.verify_garbage(report_in.image)
 
         # 3. Determine status based on confidence
         confidence = ml_result.get("confidence", 0)

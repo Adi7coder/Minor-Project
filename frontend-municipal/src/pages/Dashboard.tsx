@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-slate-800">Overview</h2>
-        <select className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+        <select className="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5">
           <option>Last 7 Days</option>
           <option>Last 30 Days</option>
           <option>This Month</option>
@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
             <h3 className="text-3xl font-bold text-slate-800">1,050</h3>
             <p className="text-xs font-medium text-green-600 mt-2">85.1% accuracy rate</p>
           </div>
-          <div className="bg-indigo-50 p-3 rounded-full text-indigo-600">
+          <div className="bg-red-50 p-3 rounded-full text-red-600">
             <CheckCircle size={24} />
           </div>
         </div>
@@ -85,7 +85,7 @@ const Dashboard: React.FC = () => {
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={mockDailyTrend} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                <Line type="monotone" dataKey="reports" stroke="#667eea" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                <Line type="monotone" dataKey="reports" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
                 <Line type="monotone" dataKey="cleaned" stroke="#48bb78" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
                 <CartesianGrid stroke="#f1f5f9" strokeDasharray="5 5" vertical={false} />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
@@ -105,7 +105,7 @@ const Dashboard: React.FC = () => {
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#475569', fontWeight: 500 }} />
                 <RechartsTooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px' }} />
-                <Bar dataKey="value" fill="#667eea" radius={[0, 4, 4, 0]} barSize={24} />
+                <Bar dataKey="value" fill="#ef4444" radius={[0, 4, 4, 0]} barSize={24} />
               </BarChart>
             </ResponsiveContainer>
           </div>
