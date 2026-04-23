@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - ML_SERVICE_URL=http://ml-service:8001/ml/detect
+    depends_on:
+      - ml-service
+
+  ml-service:
+    build: ./ml-service
+    ports:
+      - "8001:8001"
+
+  frontend-citizen:
+    build:
+      context: ./frontend-citizen
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+
+  frontend-municipal:
+    build:
+      context: ./frontend-municipal
+      dockerfile: Dockerfile
+    ports:
+      - "5174:5174"
